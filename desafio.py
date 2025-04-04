@@ -35,10 +35,12 @@ def dataFreme(videos, stats):
         snippet = item['snippet']
         video_id = snippet['resourceId'] ['videoId']
         titulo = snippet['title']
+        data = snippet['publishedAt'][:10]
         status = stats.get(video_id, {})
 
         dados.append({
             'Título': titulo,
+            'Data': data,
             'Visualizações': int(status.get('viewCount', 0)),
             'Curtidas': int(status.get('likeCount', 0)),
             'Comentários': int(status.get('commentCount', 0)),
@@ -52,11 +54,26 @@ def dashboard(df):
     fig_curtidas = px.bar(df, x='Título', y='Curtidas', title='Curtidas por vídeo')
     fig_comentarios = px.bar(df, x='Título', y='Comentários', title='Comentários por vídeo')
 
+    fig_relacao = px.scatter(df, x='Curtidas', y='Comentários', text='Título', title='Curtidas vs Comentários por Vídeo',
+    labels={'Curtidas': 'Número de Curtidas', 'Comentários': 'Número de Comentários'})
+    fig_relacao.update_traces(textposition='top center')
+
+    fig_tempoPorVisu = px.line(df, x='Data', y='Visualizações', title='Evolução das Visualizações por Data')
+
+    top10 = df.sort_values(by='Visualizações', ascending=False).head(10)
+    fig_top10 = px.bar(top10, x='Título', y='Visualizações', title='Top 10 Vídeos Mais Visualizados')
+
+    fig_viz_likes = px.scatter(top10, x='Visualizações', y='Curtidas', text='Título', title='Visualizações vs Curtidas')
+
     app.layout = html.Div([
          html.H1("Dashboard YouTube - Highlights F1 2024"),
         dcc.Graph(figure= fig_visualizacao),
         dcc.Graph(figure=fig_curtidas),
-        dcc.Graph(figure=fig_comentarios)
+        dcc.Graph(figure=fig_comentarios),
+        dcc.Graph(figure=fig_relacao),
+        dcc.Graph(figure=fig_tempoPorVisu),
+        dcc.Graph(figure=fig_top10),
+        dcc.Graph(figure=fig_viz_likes)
     ])
     app.run(debug=True)
 

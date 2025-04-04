@@ -1,4 +1,7 @@
 from googleapiclient.discovery import build
+import pandas as pd
+import plotly.express as px
+from dash import Dash, html, dcc
 
 API_KEY = 'AIzaSyCvbxSrVjyh0Dq11kXv23bdyJ2gGxhRHL0'
 youtube = build('youtube', 'v3', developerKey=API_KEY)
@@ -25,11 +28,44 @@ def estatisticas(youtube, videos):
         stats[item['id']] = item['statistics'] #para cada video salva no dicionario suas estatisticas 
     return stats
 
+def dataFreme(videos, stats):
+    dados = []
 
+    for item in videos:
+        snippet = item['snippet']
+        video_id = snippet['resourceId'] ['videoId']
+        titulo = snippet['title']
+        status = stats.get(video_id, {})
+
+        dados.append({
+            'Título': titulo,
+            'Visualizações': int(status.get('viewCount', 0)),
+            'Curtidas': int(status.get('likeCount', 0)),
+            'Comentários': int(status.get('commentCount', 0)),
+        })
+    return pd.DataFrame(dados)
+
+def dashboard(df):
+    app = Dash(__name__)
+
+    fig_visualizacao = px.bar(df, x = 'Título',  y='Visualizações', title='Visualizações por vídeo')
+    fig_curtidas = px.bar(df, x='Título', y='Curtidas', title='Curtidas por vídeo')
+    fig_comentarios = px.bar(df, x='Título', y='Comentários', title='Comentários por vídeo')
+
+    app.layout = html.Div([
+         html.H1("Dashboard YouTube - Highlights F1 2024"),
+        dcc.Graph(figure= fig_visualizacao),
+        dcc.Graph(figure=fig_curtidas),
+        dcc.Graph(figure=fig_comentarios)
+    ])
+    app.run(debug=True)
 
 if __name__ == '__main__':
     videos = buscar_videos(youtube, playlist_id)
     stats = estatisticas(youtube, videos)
+
+    df = dataFreme(videos, stats)
+    dashboard(df)
 
     print("Vídeos na playlist:")
 

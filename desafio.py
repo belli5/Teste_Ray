@@ -65,6 +65,9 @@ def dashboard(df):
 
     fig_viz_likes = px.scatter(top10, x='Visualizações', y='Curtidas', text='Título', title='Visualizações vs Curtidas')
 
+    df['Engajamento (%)'] = ((df['Curtidas'] + df['Comentários']) / df['Visualizações']) * 100
+    fig_engajamento = px.bar(df, x='Título', y='Engajamento (%)', title='Engajamento Relativo por Vídeo')
+
     app.layout = html.Div([
          html.H1("Dashboard YouTube - Highlights F1 2024"),
         dcc.Graph(figure= fig_visualizacao),
@@ -73,7 +76,8 @@ def dashboard(df):
         dcc.Graph(figure=fig_relacao),
         dcc.Graph(figure=fig_tempoPorVisu),
         dcc.Graph(figure=fig_top10),
-        dcc.Graph(figure=fig_viz_likes)
+        dcc.Graph(figure=fig_viz_likes),
+        dcc.Graph(figure= fig_engajamento)
     ])
     app.run(debug=True)
 
@@ -83,21 +87,3 @@ if __name__ == '__main__':
 
     df = dataFreme(videos, stats)
     dashboard(df)
-
-    print("Vídeos na playlist:")
-
-    for item in videos:
-        snippet = item['snippet']
-        video_id = snippet['resourceId'] ['videoId']
-        titulo = snippet['title']
-
-        status= stats.get(video_id, {})
-        vizualização = status.get('viewCount', 'N/A')
-        curtidas = status.get('likeCount', 'N/A')
-        comentarios = status.get('commentCount', 'N/A')
-
-        print(f"Título: {titulo}")
-        print(f"Visualizações: {vizualização}")
-        print(f"Curtidas: {curtidas}")
-        print(f"Comentários: {comentarios}")
-        print("---")

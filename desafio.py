@@ -69,15 +69,31 @@ def dashboard(df):
     fig_engajamento = px.bar(df, x='Título', y='Engajamento (%)', title='Engajamento Relativo por Vídeo')
 
     app.layout = html.Div([
-         html.H1("Dashboard YouTube - Highlights F1 2024"),
-        dcc.Graph(figure= fig_visualizacao),
+        html.H1("Dashboard YouTube - Highlights F1 2024"),
+        html.P("Esse dashboard apresenta uma análise dos vídeos de highlights da temporada 2024 de F1 publicados no canal oficial. Abaixo, exploramos os vídeos com maior desempenho em visualizações, curtidas e comentários."),
+        html.Hr(),
+
+        html.P("Vídeos com nomes de circuitos específicos e recentes atraem mais curtidas — possivelmente por estarem atrelados a corridas populares ou finais emocionantes. Como é o caso do GP do Canadá, Áustria, São Paulo, Monaco e Miami "),
         dcc.Graph(figure=fig_curtidas),
+
+        html.P("Vídeos com momentos polêmicos, acidentes ou finais surpreendentes tendem a gerar mais comentários — demonstrando maior envolvimento emocional do público. Como é o caso do GP da Hungria, que teve a polemica da McLaren"),
         dcc.Graph(figure=fig_comentarios),
+
+         html.P("Qual é a Correlação entre Curtidas e Comentarios? Os vídeos mais curtidos são os mais Comentados ou os mais Comentados são os mais curtidos?"),
+        html.P(["Existe uma ", html.Strong("correlação positiva"), " clara entre curtidas e comentários. Quanto mais curtidas um vídeo tem, maior tende a ser seu número de comentários."]),
+        html.P("Alguns vídeos, como o GP da Hungria e o GP da Austrália, se destacam acima da linha de tendência, indicando que geraram comentários além do esperado para o número de curtidas."),
         dcc.Graph(figure=fig_relacao),
-        dcc.Graph(figure=fig_tempoPorVisu),
+
+        dcc.Graph(figure= fig_visualizacao),
+        html.P("Os circuitos mais tradicionais ou com maior apelo midiático (Austrália, Mônaco, São Paulo) tendem a gerar maior curiosidade e tráfego orgânico no canal. Essas corridas provavelmente foram marcantes na temporada."),
         dcc.Graph(figure=fig_top10),
+
+        html.P("Os vídeos mais visualizados também são os mais curtidos?"),
+        html.P("Curtidas não dependem apenas do número de visualizações, mas também da qualidade percebida, emoção ou relevância da corrida. Corridas mais intensas ou com desfechos inesperados tendem a gerar mais likes por view."),
         dcc.Graph(figure=fig_viz_likes),
-        dcc.Graph(figure= fig_engajamento)
+
+        dcc.Graph(figure= fig_engajamento),
+        dcc.Graph(figure=fig_tempoPorVisu)
     ])
     app.run(debug=True)
 
